@@ -14,7 +14,7 @@
             padding: 0;
         }
         body {
-            background: #111;
+            background: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,11 +26,12 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            max-width: 800px;
-            max-height: 450px;
-            background: #2b4c20;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            max-width: 900px;
+            max-height: 520px;
+            background: #1e293b;
+            box-shadow: 0 0 25px rgba(0,0,0,0.9);
             overflow: hidden;
+            border-radius: 8px;
         }
         canvas {
             display: block;
@@ -39,6 +40,7 @@
             image-rendering: pixelated;
             cursor: pointer;
         }
+        /* UI HUD ด้านบน */
         #hud {
             position: absolute;
             top: 10px;
@@ -48,60 +50,169 @@
             justify-content: space-between;
             pointer-events: none;
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-shadow: 1px 1px 2px #000;
+            z-index: 5;
         }
         .hud-box {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(15, 23, 42, 0.85);
             padding: 6px 12px;
             border-radius: 8px;
-            border: 2px solid #d4af37;
+            border: 2px solid #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        /* Hotbar แถบเครื่องมือ */
         #hotbar {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 6px;
-            border-radius: 10px;
-            border: 2px solid #d4af37;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 2px solid #fbbf24;
+            z-index: 5;
         }
         .slot {
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid #777;
-            border-radius: 6px;
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #64748b;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 20px;
             cursor: pointer;
-            transition: 0.1s;
+            transition: 0.15s;
+            position: relative;
         }
         .slot.selected {
-            border-color: #ffeb3b;
-            background: rgba(255, 235, 59, 0.3);
-            transform: scale(1.08);
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.25);
+            transform: scale(1.1);
         }
+        .slot-badge {
+            position: absolute;
+            bottom: 1px;
+            right: 3px;
+            font-size: 10px;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            padding: 0 3px;
+            border-radius: 4px;
+        }
+        /* Toast เตือน */
         #toast {
             position: absolute;
             top: 55px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffeb3b;
-            padding: 6px 16px;
-            border-radius: 15px;
-            border: 1px solid #d4af37;
+            background: rgba(15, 23, 42, 0.95);
+            color: #fbbf24;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid #fbbf24;
             font-size: 13px;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            z-index: 10;
+        }
+        /* Modals & Dialogs */
+        .modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.96);
+            border: 3px solid #fbbf24;
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 320px;
+            z-index: 20;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        .modal-header {
+            font-size: 16px;
+            color: #fbbf24;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 6px;
+        }
+        .modal-btn {
+            background: #f59e0b;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .modal-btn:hover { background: #d97706; }
+        .close-btn { background: #ef4444; color: #fff; }
+        .close-btn:hover { background: #dc2626; }
+        /* Fishing Mini-Game UI */
+        #fishing-ui {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 220px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 3px solid #38bdf8;
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 5px;
+            z-index: 15;
+        }
+        #fishing-bar-bg {
+            position: relative;
+            width: 24px;
+            height: 180px;
+            background: #0284c7;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        #fishing-target {
+            position: absolute;
+            width: 100%;
+            height: 45px;
+            background: rgba(74, 222, 128, 0.7);
+            border: 2px solid #22c55e;
+            border-radius: 4px;
+            top: 100px;
+        }
+        #fishing-fish {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #fbbf24;
+            border-radius: 50%;
+            left: 4px;
+            top: 120px;
+        }
+        #fishing-progress {
+            width: 100%;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 4px;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -110,17 +221,59 @@
 <div id="game-container">
     <div id="toast">แจ้งเตือน</div>
     <div id="hud">
+        <div class="hud-box" id="time-display">🌞 08:00 น. (วันแรก)</div>
         <div class="hud-box" id="money-display">💰 500 บาท</div>
-        <div class="hud-box">🌾 ฤดูทำนาไทย</div>
+        <div class="hud-box" id="energy-display">⚡ 100/100</div>
+        <div class="hud-box" id="level-display">⭐ ฟาร์ม Lv.1 | ตกปลา Lv.1</div>
     </div>
 
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
+    <canvas id="gameCanvas" width="900" height="520"></canvas>
 
     <div id="hotbar">
         <div class="slot selected" onclick="selectSlot(0)">🪓</div>
         <div class="slot" onclick="selectSlot(1)">🚿</div>
-        <div class="slot" onclick="selectSlot(2)">🌾</div>
-        <div class="slot" onclick="selectSlot(3)">🗡️</div>
+        <div class="slot" onclick="selectSlot(2)">🌾<span class="slot-badge" id="b-rice">0</span></div>
+        <div class="slot" onclick="selectSlot(3)">🌶️<span class="slot-badge" id="b-chili">0</span></div>
+        <div class="slot" onclick="selectSlot(4)">🎣</div>
+        <div class="slot" onclick="selectSlot(5)">🗡️</div>
+    </div>
+
+    <!-- NPC Shop Modal -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-header">🏪 ร้านค้าลุงสมชาย</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>🌾 เมล็ดข้าวหอมมะลิ (20฿)</span>
+            <button class="modal-btn" onclick="buyItem('rice', 20)">ซื้อ</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>🌶️ เมล็ดพริกขี้หนู (35฿)</span>
+            <button class="modal-btn" onclick="buyItem('chili', 35)">ซื้อ</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>🐟 ขายปลาช่อน (80฿)</span>
+            <button class="modal-btn" onclick="sellItem('fish1', 80)">ขาย</button>
+        </div>
+        <button class="modal-btn close-btn" onclick="closeModal('shop-modal')">ปิดร้าน</button>
+    </div>
+
+    <!-- Quest Modal -->
+    <div id="quest-modal" class="modal">
+        <div class="modal-header">📜 เควสต์ผู้ใหญ่บ้านสมศักดิ์</div>
+        <div id="quest-desc" style="font-size:13px; color:#cbd5e1; line-height:1.4;">
+            "ยินดีต้อนรับสู่หมู่บ้านสยาม! ช่วยเกี่ยวข้าวหอมมะลิมาให้ข้า 2 ต้น แล้วข้าจะมีรางวัลให้อย่างงาม!"
+        </div>
+        <div id="quest-status" style="font-size:12px; color:#fbbf24;">ความคืบหน้า: 0/2</div>
+        <button class="modal-btn" id="claim-quest-btn" onclick="claimQuest()">รับรางวัลเควสต์ (+200฿)</button>
+        <button class="modal-btn close-btn" onclick="closeModal('quest-modal')">ไว้ทีหลัง</button>
+    </div>
+
+    <!-- Fishing Mini-Game UI -->
+    <div id="fishing-ui">
+        <div id="fishing-bar-bg">
+            <div id="fishing-target"></div>
+            <div id="fishing-fish"></div>
+        </div>
+        <div id="fishing-progress"></div>
     </div>
 </div>
 
@@ -128,234 +281,344 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
+    // --- ตัวแปรระบบเกม ---
     let money = 500;
+    let energy = 100;
+    let maxEnergy = 100;
+    let day = 1;
+    let gameMinutes = 8 * 60; // 08:00
+    let currentMap = 'farm'; // 'farm', 'village'
     let selectedTool = 0;
-    const toolNames = ['จอบพรวนดิน', 'บัวรดน้ำ', 'เมล็ดข้าวหอมมะลิ', 'เคียวเกี่ยวข้าว'];
 
-    let player = {
-        x: 400,
-        y: 250,
-        targetX: 400,
-        targetY: 250,
-        speed: 2.2,
-        isMoving: false,
-        facing: 'down',
-        animFrame: 0,
-        animTimer: 0
+    // ระบบทักษะ / อาชีพ (Professions)
+    let farmingXP = 0, farmingLv = 1;
+    let fishingXP = 0, fishingLv = 1;
+
+    // คลังของ (Inventory)
+    let inventory = {
+        riceSeeds: 3,
+        chiliSeeds: 2,
+        harvestedRice: 0,
+        harvestedChili: 0,
+        fishCount: 0
     };
 
+    // เควสต์
+    let quest = {
+        requiredRice: 2,
+        currentRice: 0,
+        completed: false
+    };
+
+    // ตัวละครผู้เล่น
+    let player = {
+        x: 350, y: 280,
+        targetX: 350, targetY: 280,
+        speed: 2.5, isMoving: false,
+        facing: 'down', animFrame: 0, animTimer: 0
+    };
+
+    // แปลงฟาร์ม (อยู่ในแผนที่ farm)
     let farmGrid = [];
     for (let r = 0; r < 3; r++) {
         for (let c = 0; c < 6; c++) {
             farmGrid.push({
-                x: 220 + c * 60,
-                y: 190 + r * 50,
-                state: 'grass',
+                x: 180 + c * 60,
+                y: 200 + r * 50,
+                state: 'grass', // grass, tilled, watered
+                crop: null,     // 'rice', 'chili'
+                growthStage: 0  // 0, 1, 2
             });
         }
     }
 
-    let audioCtx = null;
-    function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    }
+    // NPC ทั้งหมด
+    let npcs = {
+        somchai: { name: 'ลุงสมชาย (ร้านค้า)', map: 'village', x: 250, y: 180 },
+        somsak: { name: 'ผู้ใหญ่บ้านสมศักดิ์ (เควสต์)', map: 'village', x: 550, y: 180 }
+    };
 
+    // --- ระบบมินิเกมตกปลา ---
+    let isFishing = false;
+    let fishingTargetY = 60;
+    let fishingFishY = 80;
+    let fishingFishSpeed = 1.5;
+    let fishingProgressVal = 50;
+
+    // --- Audio Synth เสียงประกอบ ---
+    let audioCtx = null;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     function playSound(type) {
         initAudio();
         if (!audioCtx) return;
-        
         let osc = audioCtx.createOscillator();
         let gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        osc.connect(gain); gain.connect(audioCtx.destination);
         let now = audioCtx.currentTime;
 
         if (type === 'step') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(120, now);
-            osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
-            gain.gain.setValueAtTime(0.05, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-            osc.start(now);
-            osc.stop(now + 0.08);
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(100, now);
+            gain.gain.setValueAtTime(0.03, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+            osc.start(now); osc.stop(now + 0.06);
         } else if (type === 'farm') {
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(200, now);
-            osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
-            gain.gain.setValueAtTime(0.08, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
-            osc.start(now);
-            osc.stop(now + 0.15);
+            osc.type = 'square'; osc.frequency.setValueAtTime(160, now);
+            gain.gain.setValueAtTime(0.07, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now); osc.stop(now + 0.1);
         } else if (type === 'coin') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(987, now);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(987, now);
             osc.frequency.setValueAtTime(1318, now + 0.08);
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-            osc.start(now);
-            osc.stop(now + 0.25);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now); osc.stop(now + 0.2);
         }
     }
 
-    function selectSlot(index) {
-        selectedTool = index;
-        document.querySelectorAll('.slot').forEach((s, i) => {
-            s.classList.toggle('selected', i === index);
+    // เวลาในเกม
+    setInterval(() => {
+        gameMinutes += 2;
+        if (gameMinutes >= 24 * 60) { gameMinutes = 0; nextDay(); }
+        updateUI();
+    }, 1000);
+
+    function nextDay() {
+        day++;
+        energy = maxEnergy;
+        showToast(`🌅 เช้าวันใหม่! วันที่ ${day}`);
+        farmGrid.forEach(p => {
+            if (p.state === 'watered' && p.crop) {
+                if (p.growthStage < 2) p.growthStage++;
+                p.state = 'tilled';
+            }
         });
+    }
+
+    function updateUI() {
+        let hrs = Math.floor(gameMinutes / 60);
+        let mins = gameMinutes % 60;
+        let icon = (hrs >= 6 && hrs < 18) ? '🌞' : '🌙';
+        document.getElementById('time-display').innerText = `${icon} ${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')} น. (วันที่ ${day})`;
+        document.getElementById('money-display').innerText = `💰 ${money} บาท`;
+        document.getElementById('energy-display').innerText = `⚡ ${energy}/${maxEnergy}`;
+        document.getElementById('level-display').innerText = `⭐ ฟาร์ม Lv.${farmingLv} | ตกปลา Lv.${fishingLv}`;
+        document.getElementById('b-rice').innerText = inventory.riceSeeds;
+        document.getElementById('b-chili').innerText = inventory.chiliSeeds;
+    }
+
+    function selectSlot(i) {
+        selectedTool = i;
+        document.querySelectorAll('.slot').forEach((s, idx) => s.classList.toggle('selected', idx === i));
         playSound('step');
-        showToast("เลือก: " + toolNames[index]);
     }
 
     let toastTimer;
-    function showToast(text) {
-        const toast = document.getElementById('toast');
-        toast.innerText = text;
-        toast.style.opacity = '1';
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 1500);
+    function showToast(txt) {
+        const t = document.getElementById('toast'); t.innerText = txt; t.style.opacity = '1';
+        clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1800);
     }
 
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // --- คลิกควบคุมตัวละครและฟังก์ชัน ---
     canvas.addEventListener('pointerdown', (e) => {
         initAudio();
         const rect = canvas.getBoundingClientRect();
-        const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
-        const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        const cx = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const cy = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-        let clickedPlot = farmGrid.find(p => Math.abs(p.x - clickX) < 28 && Math.abs(p.y - clickY) < 22);
-
-        if (clickedPlot) {
-            player.targetX = clickedPlot.x;
-            player.targetY = clickedPlot.y + 15;
-            setTimeout(() => { executeFarmAction(clickedPlot); }, 350);
-        } else {
-            player.targetX = clickX;
-            player.targetY = clickY;
+        if (isFishing) {
+            fishingTargetY = Math.max(10, fishingTargetY - 25); // ดึงสายเบ็ดขึ้น
+            return;
         }
+
+        // เปลี่ยนแมพเมื่อเดินชนประตูวาร์ป
+        if (currentMap === 'farm' && cx > 840 && cy > 200 && cy < 320) {
+            currentMap = 'village'; player.x = 60; player.targetX = 60;
+            showToast("เข้าสู่: หมู่บ้านสยาม"); return;
+        }
+        if (currentMap === 'village' && cx < 50 && cy > 200 && cy < 320) {
+            currentMap = 'farm'; player.x = 830; player.targetX = 830;
+            showToast("เข้าสู่: ฟาร์มของคุณ"); return;
+        }
+
+        // คุยกับ NPC
+        if (currentMap === 'village') {
+            if (Math.abs(npcs.somchai.x - cx) < 35 && Math.abs(npcs.somchai.y - cy) < 35) {
+                document.getElementById('shop-modal').style.display = 'flex'; return;
+            }
+            if (Math.abs(npcs.somsak.x - cx) < 35 && Math.abs(npcs.somsak.y - cy) < 35) {
+                document.getElementById('quest-status').innerText = `ความคืบหน้า: ${quest.currentRice}/${quest.requiredRice}`;
+                document.getElementById('quest-modal').style.display = 'flex'; return;
+            }
+            // แม่น้ำตกปลา
+            if (cy > 420 && selectedTool === 4) {
+                startFishing(); return;
+            }
+        }
+
+        // ทำกิจกรรมแปลงเกษตร
+        if (currentMap === 'farm') {
+            let plot = farmGrid.find(p => Math.abs(p.x - cx) < 28 && Math.abs(p.y - cy) < 22);
+            if (plot) {
+                player.targetX = plot.x; player.targetY = plot.y + 15;
+                setTimeout(() => doFarmAction(plot), 300); return;
+            }
+        }
+
+        player.targetX = cx; player.targetY = cy;
     });
 
-    function executeFarmAction(plot) {
-        if (selectedTool === 0 && plot.state === 'grass') {
-            plot.state = 'tilled';
-            playSound('farm');
-            showToast("พรวนดินเรียบร้อย!");
-        } else if (selectedTool === 1 && plot.state === 'tilled') {
-            plot.state = 'watered';
-            playSound('farm');
-            showToast("รดน้ำแล้ว 💧");
-        } else if (selectedTool === 2 && plot.state === 'watered') {
-            plot.state = 'ready';
-            playSound('farm');
-            showToast("หว่านเมล็ดข้าวหอมมะลิ 🌾");
-        } else if (selectedTool === 3 && plot.state === 'ready') {
-            plot.state = 'grass';
-            money += 150;
-            playSound('coin');
-            document.getElementById('money-display').innerText = `💰 ${money} บาท`;
-            showToast("เกี่ยวข้าวสำเร็จ! ได้รับ +150 บาท 💰");
+    function doFarmAction(p) {
+        if (energy < 4) { showToast("พลังงานหมด! พักผ่อนที่เรือนไทย"); return; }
+        if (selectedTool === 0 && p.state === 'grass') {
+            p.state = 'tilled'; consumeEnergy(4); playSound('farm'); showToast("พรวนดินเรียบร้อย");
+        } else if (selectedTool === 1 && p.state === 'tilled') {
+            p.state = 'watered'; consumeEnergy(3); playSound('farm'); showToast("รดน้ำแล้ว 💧");
+        } else if (selectedTool === 2 && p.state === 'watered' && !p.crop) {
+            if (inventory.riceSeeds > 0) { inventory.riceSeeds--; p.crop = 'rice'; p.growthStage = 0; consumeEnergy(4); playSound('farm'); showToast("หว่านข้าวหอมมะลิ 🌾"); }
+        } else if (selectedTool === 3 && p.state === 'watered' && !p.crop) {
+            if (inventory.chiliSeeds > 0) { inventory.chiliSeeds--; p.crop = 'chili'; p.growthStage = 0; consumeEnergy(4); playSound('farm'); showToast("ปลูกพริกขี้หนู 🌶️"); }
+        } else if (selectedTool === 5 && p.crop && p.growthStage === 2) {
+            let rew = p.crop === 'rice' ? 120 : 180; money += rew;
+            if (p.crop === 'rice') { inventory.harvestedRice++; quest.currentRice++; }
+            p.state = 'grass'; p.crop = null; p.growthStage = 0;
+            addFarmingXP(25); consumeEnergy(5); playSound('coin'); showToast(`เก็บเกี่ยวได้ +${rew}฿!`);
+        }
+        updateUI();
+    }
+
+    function addFarmingXP(amt) {
+        farmingXP += amt;
+        if (farmingXP >= farmingLv * 100) { farmingLv++; showToast("🎉 เลเวลฟาร์มเพิ่มขึ้น! Lv." + farmingLv); }
+    }
+
+    function consumeEnergy(a) { energy = Math.max(0, energy - a); }
+
+    // --- ตกปลา Mini-Game Loop ---
+    function startFishing() {
+        if (energy < 8) { showToast("พลังงานไม่พอตกปลา!"); return; }
+        isFishing = true; fishingProgressVal = 50;
+        document.getElementById('fishing-ui').style.display = 'flex';
+        showToast("🎣 ปลาติดเบ็ดแล้ว! รักษาระดับแถบเขียวให้อยู่ตรงตัวปลา");
+    }
+
+    function updateFishing() {
+        if (!isFishing) return;
+        fishingTargetY = Math.min(135, fishingTargetY + 1.2); // ค่อยๆ ตกตามแรงโน้มถ่วง
+        fishingFishY += fishingFishSpeed;
+        if (fishingFishY > 155 || fishingFishY < 10) fishingFishSpeed *= -1;
+
+        document.getElementById('fishing-target').style.top = fishingTargetY + 'px';
+        document.getElementById('fishing-fish').style.top = fishingFishY + 'px';
+
+        if (Math.abs(fishingTargetY - fishingFishY) < 30) fishingProgressVal += 0.8;
+        else fishingProgressVal -= 0.6;
+
+        document.getElementById('fishing-progress').style.width = Math.min(100, Math.max(0, fishingProgressVal)) + '%';
+
+        if (fishingProgressVal >= 100) {
+            isFishing = false; document.getElementById('fishing-ui').style.display = 'none';
+            inventory.fishCount++; money += 80; fishingXP += 30;
+            if (fishingXP >= fishingLv * 100) fishingLv++;
+            consumeEnergy(8); playSound('coin'); showToast("🐟 ตกได้ปลาช่อนใหญ่! (+80฿)"); updateUI();
+        } else if (fishingProgressVal <= 0) {
+            isFishing = false; document.getElementById('fishing-ui').style.display = 'none';
+            consumeEnergy(4); showToast("❌ ปลาหลุดไปได้!"); updateUI();
         }
     }
 
-    function updatePlayer() {
-        let dx = player.targetX - player.x;
-        let dy = player.targetY - player.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
+    // ร้านค้า & เควสต์
+    function buyItem(t, p) {
+        if (money >= p) { money -= p; if (t==='rice') inventory.riceSeeds++; else if (t==='chili') inventory.chiliSeeds++; playSound('coin'); showToast("ซื้อสำเร็จ!"); updateUI(); }
+    }
+    function sellItem(t, p) {
+        if (inventory.fishCount > 0) { inventory.fishCount--; money += p; playSound('coin'); showToast("ขายปลาได้ +" + p + "฿!"); updateUI(); }
+    }
+    function claimQuest() {
+        if (quest.currentRice >= quest.requiredRice && !quest.completed) {
+            quest.completed = true; money += 200; playSound('coin');
+            showToast("🎉 เควสต์สำเร็จ! ได้รับรางวัล +200฿");
+            document.getElementById('claim-quest-btn').style.display = 'none'; updateUI();
+        } else showToast("เควสต์ยังไม่เสร็จ!");
+    }
 
+    // --- อัปเดตตำแหน่งและการเดิน ---
+    function updatePlayer() {
+        let dx = player.targetX - player.x, dy = player.targetY - player.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
         if (dist > 2) {
             player.isMoving = true;
-            player.x += (dx / dist) * player.speed;
-            player.y += (dy / dist) * player.speed;
-
-            if (Math.abs(dx) > Math.abs(dy)) {
-                player.facing = dx > 0 ? 'right' : 'left';
-            } else {
-                player.facing = dy > 0 ? 'down' : 'up';
-            }
-
+            player.x += (dx / dist) * player.speed; player.y += (dy / dist) * player.speed;
+            player.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
             player.animTimer++;
-            if (player.animTimer % 10 === 0) {
-                player.animFrame = (player.animFrame + 1) % 4;
-                playSound('step');
-            }
-        } else {
-            player.isMoving = false;
-            player.animFrame = 0;
-        }
+            if (player.animTimer % 8 === 0) { player.animFrame = (player.animFrame + 1) % 4; playSound('step'); }
+        } else { player.isMoving = false; player.animFrame = 0; }
     }
 
+    // --- การวาดฉาก (Render Maps) ---
     function drawScene() {
-        ctx.fillStyle = '#417d29';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (currentMap === 'farm') {
+            ctx.fillStyle = '#3f7a28'; ctx.fillRect(0, 0, canvas.width, canvas.height); // พื้นดินหญ้า
+            // เรือนไทย
+            ctx.fillStyle = '#5c3a21'; ctx.fillRect(620, 60, 160, 90);
+            ctx.fillStyle = '#8b2500'; ctx.beginPath(); ctx.moveTo(600,60); ctx.lineTo(700,20); ctx.lineTo(800,60); ctx.fill();
+            // ประตูวาร์ปไปหมู่บ้าน
+            ctx.fillStyle = '#fbbf24'; ctx.fillRect(870, 220, 20, 80);
+            ctx.fillStyle = '#fff'; ctx.font = '12px Tahoma'; ctx.fillText("ไปหมู่บ้าน ➔", 800, 210);
 
-        ctx.fillStyle = '#5c3a21';
-        ctx.fillRect(580, 50, 160, 90);
-        ctx.fillStyle = '#8b2500';
-        ctx.beginPath();
-        ctx.moveTo(560, 50); ctx.lineTo(660, 10); ctx.lineTo(760, 50);
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = '#d4af37';
-        ctx.fillRect(656, 8, 8, 12);
+            // แปลงเกษตร
+            farmGrid.forEach(p => {
+                ctx.fillStyle = p.state === 'grass' ? '#2d1e18' : (p.state === 'tilled' ? '#4a3022' : '#22150e');
+                ctx.fillRect(p.x - 26, p.y - 18, 52, 36);
+                if (p.crop) {
+                    if (p.growthStage === 0) { ctx.fillStyle = '#8bc34a'; ctx.fillRect(p.x - 2, p.y - 6, 4, 6); }
+                    else if (p.growthStage === 1) { ctx.fillStyle = '#4caf50'; ctx.fillRect(p.x - 5, p.y - 14, 10, 14); }
+                    else if (p.growthStage === 2) {
+                        ctx.fillStyle = p.crop === 'rice' ? '#ffd700' : '#388e3c';
+                        ctx.fillRect(p.x - 8, p.y - 22, 16, 20);
+                        if (p.crop === 'chili') { ctx.fillStyle = '#ef4444'; ctx.fillRect(p.x - 3, p.y - 12, 6, 6); }
+                    }
+                }
+            });
+        } else if (currentMap === 'village') {
+            ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, canvas.width, canvas.height); // ถนนหมู่บ้าน
+            ctx.fillStyle = '#38bdf8'; ctx.fillRect(0, 430, canvas.width, 90); // แม่น้ำ
+            ctx.fillStyle = '#fff'; ctx.font = '12px Tahoma'; ctx.fillText("🌊 แม่น้ำตกปลา (ใช้ถือเบ็ด 🎣 แล้วแตะที่น้ำ)", 300, 465);
 
-        farmGrid.forEach(plot => {
-            if (plot.state === 'grass') ctx.fillStyle = '#2d1e18';
-            else if (plot.state === 'tilled') ctx.fillStyle = '#4a3022';
-            else if (plot.state === 'watered') ctx.fillStyle = '#22150e';
-            else if (plot.state === 'ready') ctx.fillStyle = '#1c3b17';
+            // ประตูวาร์ปกลับฟาร์ม
+            ctx.fillStyle = '#fbbf24'; ctx.fillRect(10, 220, 20, 80);
+            ctx.fillText("⬅ กลับฟาร์ม", 40, 210);
 
-            ctx.fillRect(plot.x - 26, plot.y - 18, 52, 36);
-            ctx.strokeStyle = '#120a06';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(plot.x - 26, plot.y - 18, 52, 36);
+            // วาด NPCs
+            drawNPC(npcs.somchai.x, npcs.somchai.y, npcs.somchai.name, '#b91c1c');
+            drawNPC(npcs.somsak.x, npcs.somsak.y, npcs.somsak.name, '#15803d');
+        }
 
-            if (plot.state === 'ready') {
-                ctx.fillStyle = '#ffd700';
-                ctx.fillRect(plot.x - 12, plot.y - 28, 6, 20);
-                ctx.fillRect(plot.x - 2, plot.y - 32, 6, 24);
-                ctx.fillRect(plot.x + 8, plot.y - 26, 6, 18);
-            }
-        });
+        // แสงเวลากลางคืน/ยามเย็น
+        let hrs = gameMinutes / 60;
+        if (hrs < 6 || hrs > 18) { ctx.fillStyle = 'rgba(15, 23, 42, 0.6)'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    }
+
+    function drawNPC(x, y, name, color) {
+        ctx.fillStyle = '#1c1c1c'; ctx.fillRect(x - 5, y + 2, 4, 10); ctx.fillRect(x + 1, y + 2, 4, 10);
+        ctx.fillStyle = color; ctx.fillRect(x - 8, y - 12, 16, 15);
+        ctx.fillStyle = '#e5a882'; ctx.fillRect(x - 6, y - 22, 12, 10);
+        ctx.fillStyle = '#fbbf24'; ctx.font = '11px Tahoma'; ctx.fillText(name, x - 40, y - 28);
     }
 
     function drawPlayer() {
-        ctx.save();
-        ctx.translate(player.x, player.y);
-
-        let legOffset = player.isMoving ? Math.sin(player.animFrame * Math.PI / 2) * 4 : 0;
-
-        ctx.fillStyle = '#1c1c1c';
-        ctx.fillRect(-6, 2 + legOffset, 5, 10);
-        ctx.fillRect(1, 2 - legOffset, 5, 10);
-
-        ctx.fillStyle = '#1a365d';
-        ctx.fillRect(-9, -14, 18, 18);
-
-        ctx.fillStyle = '#b91c1c';
-        ctx.fillRect(-9, -1, 18, 5);
-
-        ctx.fillStyle = '#e5a882';
-        ctx.fillRect(-7, -23, 14, 10);
-
-        ctx.fillStyle = '#000';
-        if (player.facing === 'down' || player.facing === 'right') {
-            ctx.fillRect(player.facing === 'right' ? 3 : 1, -20, 3, 3);
-        }
-        if (player.facing === 'down' || player.facing === 'left') {
-            ctx.fillRect(player.facing === 'left' ? -5 : -4, -20, 3, 3);
-        }
-
-        ctx.fillStyle = '#d97706';
-        ctx.beginPath();
-        ctx.arc(0, -23, 15, Math.PI, 0, false);
-        ctx.fill();
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(-15, -23, 30, 2);
-
+        ctx.save(); ctx.translate(player.x, player.y);
+        let leg = player.isMoving ? Math.sin(player.animFrame * Math.PI / 2) * 4 : 0;
+        ctx.fillStyle = '#1c1c1c'; ctx.fillRect(-6, 2 + leg, 5, 10); ctx.fillRect(1, 2 - leg, 5, 10);
+        ctx.fillStyle = '#1e40af'; ctx.fillRect(-9, -14, 18, 18); // เสื้อหม้อห้อมน้ำเงิน
+        ctx.fillStyle = '#b91c1c'; ctx.fillRect(-9, -1, 18, 5);  // ผ้าขาวม้า
+        ctx.fillStyle = '#e5a882'; ctx.fillRect(-7, -23, 14, 10); // หัว
+        ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.arc(0, -23, 15, Math.PI, 0, false); ctx.fill(); // หมวกงอบ
         ctx.restore();
     }
 
+    // Main Game Loop
     function loop() {
         updatePlayer();
+        updateFishing();
         drawScene();
         drawPlayer();
         requestAnimationFrame(loop);
