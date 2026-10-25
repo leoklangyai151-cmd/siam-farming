@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>สยามฟาร์มมิ่ง - Siam Valley RPG</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Tahoma', sans-serif;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 800px;
+            max-height: 450px;
+            background: #2b4c20;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            cursor: pointer;
+        }
+        #hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .hud-box {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid #d4af37;
+        }
+        #hotbar {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 6px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+        }
+        .slot {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid #777;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .slot.selected {
+            border-color: #ffeb3b;
+            background: rgba(255, 235, 59, 0.3);
+            transform: scale(1.08);
+        }
+        #toast {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffeb3b;
+            padding: 6px 16px;
+            border-radius: 15px;
+            border: 1px solid #d4af37;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="toast">แจ้งเตือน</div>
+    <div id="hud">
+        <div class="hud-box" id="money-display">💰 500 บาท</div>
+        <div class="hud-box">🌾 ฤดูทำนาไทย</div>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+    <div id="hotbar">
+        <div class="slot selected" onclick="selectSlot(0)">🪓</div>
+        <div class="slot" onclick="selectSlot(1)">🚿</div>
+        <div class="slot" onclick="selectSlot(2)">🌾</div>
+        <div class="slot" onclick="selectSlot(3)">🗡️</div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let money = 500;
+    let selectedTool = 0;
+    const toolNames = ['จอบพรวนดิน', 'บัวรดน้ำ', 'เมล็ดข้าวหอมมะลิ', 'เคียวเกี่ยวข้าว'];
+
+    let player = {
+        x: 400,
+        y: 250,
+        targetX: 400,
+        targetY: 250,
+        speed: 2.2,
+        isMoving: false,
+        facing: 'down',
+        animFrame: 0,
+        animTimer: 0
+    };
+
+    let farmGrid = [];
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 6; c++) {
+            farmGrid.push({
+                x: 220 + c * 60,
+                y: 190 + r * 50,
+                state: 'grass',
+            });
+        }
+    }
+
+    let audioCtx = null;
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playSound(type) {
+        initAudio();
+        if (!audioCtx) return;
+        
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        let now = audioCtx.currentTime;
+
+        if (type === 'step') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(120, now);
+            osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } else if (type === 'farm') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        } else if (type === 'coin') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987, now);
+            osc.frequency.setValueAtTime(1318, now + 0.08);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+        }
+    }
+
+    function selectSlot(index) {
+        selectedTool = index;
+        document.querySelectorAll('.slot').forEach((s, i) => {
+            s.classList.toggle('selected', i === index);
+        });
+        playSound('step');
+        showToast("เลือก: " + toolNames[index]);
+    }
+
+    let toastTimer;
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        toast.innerText = text;
+        toast.style.opacity = '1';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 1500);
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+        initAudio();
+        const rect = canvas.getBoundingClientRect();
+        const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        let clickedPlot = farmGrid.find(p => Math.abs(p.x - clickX) < 28 && Math.abs(p.y - clickY) < 22);
+
+        if (clickedPlot) {
+            player.targetX = clickedPlot.x;
+            player.targetY = clickedPlot.y + 15;
+            setTimeout(() => { executeFarmAction(clickedPlot); }, 350);
+        } else {
+            player.targetX = clickX;
+            player.targetY = clickY;
+        }
+    });
+
+    function executeFarmAction(plot) {
+        if (selectedTool === 0 && plot.state === 'grass') {
+            plot.state = 'tilled';
+            playSound('farm');
+            showToast("พรวนดินเรียบร้อย!");
+        } else if (selectedTool === 1 && plot.state === 'tilled') {
+            plot.state = 'watered';
+            playSound('farm');
+            showToast("รดน้ำแล้ว 💧");
+        } else if (selectedTool === 2 && plot.state === 'watered') {
+            plot.state = 'ready';
+            playSound('farm');
+            showToast("หว่านเมล็ดข้าวหอมมะลิ 🌾");
+        } else if (selectedTool === 3 && plot.state === 'ready') {
+            plot.state = 'grass';
+            money += 150;
+            playSound('coin');
+            document.getElementById('money-display').innerText = `💰 ${money} บาท`;
+            showToast("เกี่ยวข้าวสำเร็จ! ได้รับ +150 บาท 💰");
+        }
+    }
+
+    function updatePlayer() {
+        let dx = player.targetX - player.x;
+        let dy = player.targetY - player.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 2) {
+            player.isMoving = true;
+            player.x += (dx / dist) * player.speed;
+            player.y += (dy / dist) * player.speed;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                player.facing = dx > 0 ? 'right' : 'left';
+            } else {
+                player.facing = dy > 0 ? 'down' : 'up';
+            }
+
+            player.animTimer++;
+            if (player.animTimer % 10 === 0) {
+                player.animFrame = (player.animFrame + 1) % 4;
+                playSound('step');
+            }
+        } else {
+            player.isMoving = false;
+            player.animFrame = 0;
+        }
+    }
+
+    function drawScene() {
+        ctx.fillStyle = '#417d29';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#5c3a21';
+        ctx.fillRect(580, 50, 160, 90);
+        ctx.fillStyle = '#8b2500';
+        ctx.beginPath();
+        ctx.moveTo(560, 50); ctx.lineTo(660, 10); ctx.lineTo(760, 50);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#d4af37';
+        ctx.fillRect(656, 8, 8, 12);
+
+        farmGrid.forEach(plot => {
+            if (plot.state === 'grass') ctx.fillStyle = '#2d1e18';
+            else if (plot.state === 'tilled') ctx.fillStyle = '#4a3022';
+            else if (plot.state === 'watered') ctx.fillStyle = '#22150e';
+            else if (plot.state === 'ready') ctx.fillStyle = '#1c3b17';
+
+            ctx.fillRect(plot.x - 26, plot.y - 18, 52, 36);
+            ctx.strokeStyle = '#120a06';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(plot.x - 26, plot.y - 18, 52, 36);
+
+            if (plot.state === 'ready') {
+                ctx.fillStyle = '#ffd700';
+                ctx.fillRect(plot.x - 12, plot.y - 28, 6, 20);
+                ctx.fillRect(plot.x - 2, plot.y - 32, 6, 24);
+                ctx.fillRect(plot.x + 8, plot.y - 26, 6, 18);
+            }
+        });
+    }
+
+    function drawPlayer() {
+        ctx.save();
+        ctx.translate(player.x, player.y);
+
+        let legOffset = player.isMoving ? Math.sin(player.animFrame * Math.PI / 2) * 4 : 0;
+
+        ctx.fillStyle = '#1c1c1c';
+        ctx.fillRect(-6, 2 + legOffset, 5, 10);
+        ctx.fillRect(1, 2 - legOffset, 5, 10);
+
+        ctx.fillStyle = '#1a365d';
+        ctx.fillRect(-9, -14, 18, 18);
+
+        ctx.fillStyle = '#b91c1c';
+        ctx.fillRect(-9, -1, 18, 5);
+
+        ctx.fillStyle = '#e5a882';
+        ctx.fillRect(-7, -23, 14, 10);
+
+        ctx.fillStyle = '#000';
+        if (player.facing === 'down' || player.facing === 'right') {
+            ctx.fillRect(player.facing === 'right' ? 3 : 1, -20, 3, 3);
+        }
+        if (player.facing === 'down' || player.facing === 'left') {
+            ctx.fillRect(player.facing === 'left' ? -5 : -4, -20, 3, 3);
+        }
+
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.arc(0, -23, 15, Math.PI, 0, false);
+        ctx.fill();
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-15, -23, 30, 2);
+
+        ctx.restore();
+    }
+
+    function loop() {
+        updatePlayer();
+        drawScene();
+        drawPlayer();
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
+
+</body>
+</html>
